@@ -7,8 +7,6 @@ window.Shortly = Backbone.View.extend({
       <ul> \
         <li><a href="#" class="index">All Links</a></li> \
         <li><a href="#" class="create">Shorten</a></li> \
-        <li><a href="#" class="login">Login</a></li> \
-        <li><a href="#" class="logout">Logout</a></li> \
       </ul> \
       </div> \
       <div id="container"></div>'
@@ -19,10 +17,7 @@ window.Shortly = Backbone.View.extend({
   events: {
     "click li a.index":  "renderIndexView",
     "click li a.create": "renderCreateView",
-    "click li a.login": "renderLoginView",
     "click  #submitButton": "postLogin"
-    // "submit form.login": "postLogin"
-    // "click li a.logout": "render"
   },
 
   initialize: function(){
@@ -30,6 +25,7 @@ window.Shortly = Backbone.View.extend({
     $('body').append(this.render().el);
     this.renderIndexView(); // default view
     //$('form.login').submit(this.postLogin);
+    $('.divLogin').empty().append(this.loginTemplate());
     this.renderUserName();
   },
 
@@ -43,8 +39,6 @@ window.Shortly = Backbone.View.extend({
     var links = new Shortly.Links();
     var linksView = new Shortly.LinksView( {collection: links} );
     this.$el.find('#container').html( linksView.render().el );
-    $('.divLogin').append(this.loginTemplate());
-
     this.updateNav('index');
   },
 
@@ -79,6 +73,7 @@ window.Shortly = Backbone.View.extend({
       localStorage.auth_code = token.auth_code;
       localStorage.username = token.username;
       this.renderUserName();
+      this.renderIndexView();
     }.bind(this));
   },
 
