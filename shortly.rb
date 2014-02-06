@@ -49,6 +49,18 @@ class Click < ActiveRecord::Base
     belongs_to :link, counter_cache: :visits
 end
 
+class User < ActiveRecord::Base
+  has_many :tokens
+end
+
+class Token < ActiveRecord::Base
+  belongs_to :user
+  def set_auth_code (params)
+    string_to_hash = params.username + params.password
+    Digest::SHA1.hexdigest(string_to_hash)[0,10]
+  end
+end
+
 ###########################################################
 # Routes
 ###########################################################
@@ -78,6 +90,18 @@ get '/:url' do
     raise Sinatra::NotFound if link.nil?
     link.clicks.create!
     redirect link.url
+end
+
+post '/users/create' do 
+  data = JSON.parse request.body.read
+  user = User.create(data)
+  token = Token.new
+  token.auth_code = token.set_auth_code(user)
+  token.user_id = user.id
+  token.save
+
+  content_type :json
+  token.to_json 
 end
 
 ###########################################################

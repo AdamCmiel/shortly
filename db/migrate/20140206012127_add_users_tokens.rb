@@ -1,7 +1,7 @@
 class AddUsersTokens < ActiveRecord::Migration
   def up
     create_table :users do |t|
-      t.string :usernmae
+      t.string :username
       t.string :password
       t.timestamps
     end
