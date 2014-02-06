@@ -73,7 +73,10 @@ window.Shortly = Backbone.View.extend({
       username: username,
       password: password
     };
-    $.post('/users/create', JSON.stringify(postData), function(something){console.log(something)});
+    $.post('/users/create', JSON.stringify(postData), function(token){
+      console.log(token);
+      localStorage.auth_code = token.auth_code;
+    });
   }
 
 });
