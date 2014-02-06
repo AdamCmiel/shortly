@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140206012127) do
+ActiveRecord::Schema.define(version: 20140206184429) do
 
   create_table "clicks", force: true do |t|
     t.integer  "link_id"
@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 20140206012127) do
     t.datetime "updated_at"
     t.integer  "visits",     default: 0
     t.string   "title"
+    t.integer  "user_id"
   end
 
   create_table "tokens", force: true do |t|

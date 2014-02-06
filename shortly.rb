@@ -37,6 +37,7 @@ ActiveRecord::Base.include_root_in_json = false
 
 class Link < ActiveRecord::Base
     has_many :clicks
+    belongs_to :user
 
     validates :url, presence: true
 
@@ -51,6 +52,7 @@ end
 
 class User < ActiveRecord::Base
   has_many :tokens
+  has_many :links
 end
 
 class Token < ActiveRecord::Base
@@ -70,17 +72,38 @@ get '/' do
 end
 
 get '/links' do
-    links = Link.order("created_at DESC")
+  puts "Here in get: #{params['username']}"
+  #extract auth_code string (auth_codes stored in token table)
+  auth_code = params['auth_code']
+  #find user_id associated with token
+  user_id = Token.find_by_auth_code(auth_code).user_id
+  #find all links with user_id
+
+  if(user_id)
+    links = Link.find_all_by_user_id(user_id) #.order('created_at DESC')
+    puts links.inspect
     links.map { |link|
-        link.as_json.merge(base_url: request.base_url)
+     link.as_json.merge(base_url: request.base_url)
     }.to_json
+  else
+    status 401
+    body "Please login to create an account"
+  end
 end
 
 post '/links' do
     data = JSON.parse request.body.read
+    puts data.inspect
     uri = URI(data['url'])
     raise Sinatra::NotFound unless uri.absolute?
-    link = Link.find_by_url(uri.to_s) ||  Link.create( url: uri.to_s, title: get_url_title(uri) )
+    #user = User.find_by username: data[:username]
+    user = User.find_by_username(data["username"])
+    puts "Should puts user row: #{user.inspect}"
+    link = Link.find_by_url(uri.to_s) ||  Link.create( url: uri.to_s, title: get_url_title(uri), user_id: user.id)
+    puts "Link row: #{link.inspect}"
+    #link.user_id = user.id
+    #link.save
+
     link.as_json.merge(base_url: request.base_url).to_json
 end
 

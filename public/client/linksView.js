@@ -4,7 +4,9 @@ Shortly.LinksView = Backbone.View.extend({
 
   initialize: function(){
     this.collection.on('sync', this.addAll, this);
-    this.collection.fetch();
+    this.collection.fetch({
+      data: this.getUsernameAndTokenObj()
+    });
   },
 
   render: function() {
@@ -19,6 +21,14 @@ Shortly.LinksView = Backbone.View.extend({
   addOne: function(item){
     var view = new Shortly.LinkView( {model: item} );
     this.$el.append(view.render().el);
-  }
+  },
+
+  getUsernameAndTokenObj: function(){
+  var obj = {
+    username: localStorage.username,
+    auth_code: localStorage.auth_code
+  };
+  return obj;
+}
 
 });
