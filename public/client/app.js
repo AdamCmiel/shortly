@@ -30,6 +30,7 @@ window.Shortly = Backbone.View.extend({
     $('body').append(this.render().el);
     this.renderIndexView(); // default view
     //$('form.login').submit(this.postLogin);
+    this.renderUserName();
   },
 
   render: function(){
@@ -74,9 +75,24 @@ window.Shortly = Backbone.View.extend({
       password: password
     };
     $.post('/users/create', JSON.stringify(postData), function(token){
-      console.log(token);
+      //console.log(token);
       localStorage.auth_code = token.auth_code;
-    });
+      localStorage.username = token.username;
+      this.renderUserName();
+    }.bind(this));
+  },
+
+  renderUserName: function(){
+    //debugger;
+    if(localStorage.username){
+      $("#helloUsername").remove();
+      $('.divLogin').append(
+        $('<p id="helloUsername"></p>')
+          .text("Hello: " + localStorage.username)
+      );
+    }
   }
+
+
 
 });

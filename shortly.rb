@@ -80,8 +80,7 @@ post '/links' do
     data = JSON.parse request.body.read
     uri = URI(data['url'])
     raise Sinatra::NotFound unless uri.absolute?
-    link = Link.find_by_url(uri.to_s) ||
-           Link.create( url: uri.to_s, title: get_url_title(uri) )
+    link = Link.find_by_url(uri.to_s) ||  Link.create( url: uri.to_s, title: get_url_title(uri) )
     link.as_json.merge(base_url: request.base_url).to_json
 end
 
@@ -101,7 +100,12 @@ post '/users/create' do
   token.save
 
   content_type :json
-  token.to_json 
+  dataBack = {
+    auth_code: token.auth_code,
+    username: user.username,
+    created_at: token.created_at
+  }
+  dataBack.to_json 
 end
 
 ###########################################################
