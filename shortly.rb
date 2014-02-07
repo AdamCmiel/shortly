@@ -71,6 +71,10 @@ get '/' do
     erb :index
 end
 
+get '/create' do
+  erb :index
+end
+
 get '/links' do
   puts "Here in get: #{params['username']}"
   #extract auth_code string (auth_codes stored in token table)

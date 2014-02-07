@@ -24,11 +24,11 @@ window.Shortly = Backbone.View.extend({
     console.log( "Shortly is running" );
     $('body').append(this.render().el);
     //$('form.login').submit(this.postLogin);
-    $('.divLogin').empty().append(this.loginTemplate());
+    $('.divLogin').append(this.loginTemplate());
     this.router = new Shortly.Router({el: this.$el.find("#container")});
     this.router.on('route', this.updateNav, this);
     Backbone.history.start({pushState: true});
-    this.renderIndexView(); // default view
+    debugger;
     this.renderUserName();
   },
 
