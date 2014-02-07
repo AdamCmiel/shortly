@@ -95,11 +95,19 @@ post '/links' do
     data = JSON.parse request.body.read
     puts data.inspect
     uri = URI(data['url'])
+
+    og_image_url = read_url_head(uri).match(/image. content=.(.*)./)
+    puts og_image_url
+
+    unless og_image_url.nil?
+      og_image_url = og_image_url[1]
+    end
+
     raise Sinatra::NotFound unless uri.absolute?
     #user = User.find_by username: data[:username]
     user = User.find_by_username(data["username"])
     puts "Should puts user row: #{user.inspect}"
-    link = Link.find_by_url(uri.to_s) ||  Link.create( url: uri.to_s, title: get_url_title(uri), user_id: user.id)
+    link = Link.find_by_url(uri.to_s) ||  Link.create( url: uri.to_s, title: get_url_title(uri), user_id: user.id, image: og_image_url)
     puts "Link row: #{link.inspect}"
     #link.user_id = user.id
     #link.save
@@ -114,7 +122,7 @@ get '/:url' do
     redirect link.url
 end
 
-post '/users/create' do 
+post '/users/create' do
   data = JSON.parse request.body.read
   user = User.create(data)
   token = Token.new
@@ -128,7 +136,7 @@ post '/users/create' do
     username: user.username,
     created_at: token.created_at
   }
-  dataBack.to_json 
+  dataBack.to_json
 end
 
 ###########################################################
@@ -147,6 +155,20 @@ def read_url_head url
     end
     head + "</html>"
 end
+
+def read_url_page url
+    page = ""
+    url.open do |u|
+        begin
+            line = u.gets
+            next  if line.nil?
+            page += line
+            break if line =~ /<\/body>/
+        end until u.eof?
+    end
+    page + "</html>"
+end
+
 
 def get_url_title url
     # Nokogiri::HTML.parse( read_url_head url ).title
