@@ -96,9 +96,9 @@ post '/links' do
     puts data.inspect
     uri = URI(data['url'])
 
-    og_image_url = read_url_head(uri).match(/image. content=.(.*)./)
-    puts og_image_url
-
+    #Tring to extract Facebook og:image url from head, but appears to be variance btw websites
+    #og_image_url = read_url_head(uri).match(/image. content=.(.*)./)
+    og_image_url = nil
     unless og_image_url.nil?
       og_image_url = og_image_url[1]
     end
